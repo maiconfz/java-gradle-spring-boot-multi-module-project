@@ -4,4 +4,4 @@ plugins {
 }
 
 rootProject.name = "java-gradle-spring-boot-multi-module-project"
-include("app", "data", "data-model", "data-repository")
+include("app", "service", "data", "data-model", "data-repository")
