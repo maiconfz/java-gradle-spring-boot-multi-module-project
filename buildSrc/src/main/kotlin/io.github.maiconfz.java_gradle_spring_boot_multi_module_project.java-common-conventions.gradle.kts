@@ -10,6 +10,7 @@ repositories {
 }
 
 dependencies {
+    implementation("com.google.guava:guava:32.1.3-jre")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
