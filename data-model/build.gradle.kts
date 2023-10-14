@@ -3,6 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":data-model"))
-    implementation(project(":data-repository"))
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 }
