@@ -43,35 +43,35 @@ public class BaseEntity implements Serializable {
     @ToString.Include
     private UUID id;
 
-    @Column(name = "REGISTER_CREATION_DATE")
-    @DateTimeFormat(iso = ISO.DATE_TIME)
-    private LocalDateTime registerCreationDate;
-
-    @Column(name = "REGISTER_LAST_UPDATE_DATE")
-    @DateTimeFormat(iso = ISO.DATE_TIME)
-    private LocalDateTime registerLastUpdateDate;
-
-    @Column(name = "REGISTER_DELETE_DATE")
-    @DateTimeFormat(iso = ISO.DATE_TIME)
-    private LocalDateTime registerDeleteDate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "REGISTER_CREATOR_ID")
-    private User registerCreator;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "REGISTER_LAST_UPDATE_USER_ID")
-    private User registerLastUpdateUser;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "REGISTER_DELETE_USER_ID")
-    private User registerDeleteUser;
-
     @ManyToOne
     @JoinColumn(name = "STATUS_ID")
     private Status status;
 
-    public Boolean isNew() {
+    @Column(name = "DATA_CREATION_DATE")
+    @DateTimeFormat(iso = ISO.DATE_TIME)
+    private LocalDateTime dataCreationDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DATA_CREATION_USER_ID")
+    private User dataCreationUser;
+
+    @Column(name = "DATA_LAST_UPDATE_DATE")
+    @DateTimeFormat(iso = ISO.DATE_TIME)
+    private LocalDateTime dataLastUpdateDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DATA_LAST_UPDATE_USER_ID")
+    private User dataLastUpdateUser;
+
+    @Column(name = "DATA_REMOVAL_DATE")
+    @DateTimeFormat(iso = ISO.DATE_TIME)
+    private LocalDateTime dataRemovalDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DATA_REMOVAL_USER_ID")
+    private User dataRemovalUser;
+
+    public boolean isNew() {
         return this.id == null;
     }
 }
