@@ -11,7 +11,6 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class UserCreationDto extends NamedDto {
-    private final String username;
     private final String email;
     private final String password;
 }

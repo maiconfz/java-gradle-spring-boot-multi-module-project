@@ -7,4 +7,5 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class NamedDto {
     private final String name;
+    private final String displayName;
 }

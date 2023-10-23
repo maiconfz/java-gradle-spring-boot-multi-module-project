@@ -29,10 +29,6 @@ import lombok.experimental.SuperBuilder;
 public class User extends NamedEntity {
     private static final long serialVersionUID = 4690675104269372053L;
 
-    @Column(name = "USERNAME", nullable = false, unique = true)
-    @ToString.Include
-    private String username;
-
     @Column(name = "EMAIL", nullable = false)
     @ToString.Include
     private String email;

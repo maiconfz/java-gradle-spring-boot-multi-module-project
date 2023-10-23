@@ -14,7 +14,6 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class UserUpdateDto extends NamedDto {
     private final UUID id;
-    private final String username;
     private final String email;
     private final String password;
 }

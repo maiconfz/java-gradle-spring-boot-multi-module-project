@@ -21,4 +21,6 @@ public class NamedEntity extends BaseEntity {
 
     @Column(name = "NAME", nullable = false, unique = true)
     private String name;
+    @Column(name = "DISPLAY_NAME")
+    private String displayName;
 }

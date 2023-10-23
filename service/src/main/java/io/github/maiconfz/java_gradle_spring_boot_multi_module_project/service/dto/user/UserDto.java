@@ -15,6 +15,5 @@ import lombok.experimental.SuperBuilder;
 public class UserDto extends NamedDto {
     @EqualsAndHashCode.Include
     private final UUID id;
-    private final String username;
     private final String email;
 }
