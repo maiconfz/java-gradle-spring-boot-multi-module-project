@@ -1,20 +1,23 @@
 package io.github.maiconfz.java_gradle_spring_boot_multi_module_project.commons.result;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Data
-@Builder
-public class ResultDouble<A, B> {
-    private final boolean success;
-    private final A valueA;
+@SuperBuilder(builderMethodName = "resultDoubleBuilder")
+@Getter
+@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
+public class ResultDouble<A, B> extends ResultSingle<A> {
     private final B valueB;
 
-    public static <A, B> ResultDouble<A, B> successOf(A valueA, B valueB) {
-        return new ResultDouble<>(true, valueA, valueB);
+    public static <A, B> ResultDouble<A, B> successOf(A value, B valueB) {
+        return (ResultDouble<A, B>) resultDoubleBuilder().success(true).value(value).valueB(valueB).build();
     }
 
-    public static <A, B> ResultDouble<A, B> failureOf(A valueA, B valueB) {
-        return new ResultDouble<>(true, valueA, valueB);
+    public static <A, B> ResultDouble<A, B> failureOf(A value, B valueB) {
+        return (ResultDouble<A, B>) resultDoubleBuilder().success(false).value(value).valueB(valueB).build();
     }
+
 }

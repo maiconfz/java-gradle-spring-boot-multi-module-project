@@ -1,10 +1,10 @@
 package io.github.maiconfz.java_gradle_spring_boot_multi_module_project.commons.result;
 
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
+@SuperBuilder
 public class Result {
     private final boolean success;
 
