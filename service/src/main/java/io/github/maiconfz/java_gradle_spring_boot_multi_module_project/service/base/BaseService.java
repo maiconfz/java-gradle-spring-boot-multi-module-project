@@ -4,31 +4,24 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+public interface BaseService<T> {
 
-public interface BaseService<C, R, U, D> {
+    T create(T o);
 
-    C create(C o);
+    T update(T o);
 
-    U update(U o);
+    boolean exists(T o);
 
-    Stream<R> findAll();
+    boolean exists(UUID id);
 
-    Page<R> findAll(Pageable pageable);
+    Stream<T> findAll();
 
-    Optional<R> findById(UUID id);
+    Optional<T> findById(UUID id);
 
-    Stream<R> findAllById(Stream<UUID> ids);
+    T approve(T o);
 
-    R validateExistenceAndFind(R o);
+    void delete(T o);
 
-    Stream<R> validateExistenceAndFind(Stream<R> stream);
-
-    U approve(U o);
-
-    void delete(D o);
-
-    void hardDelete(D o);
+    void hardDelete(T o);
 
 }

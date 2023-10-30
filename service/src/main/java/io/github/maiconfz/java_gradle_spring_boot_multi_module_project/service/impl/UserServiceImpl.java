@@ -4,100 +4,112 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.data.model.User;
+import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.data.model.enums.StatusEnum;
+import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.data.repository.StatusRepository;
+import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.data.repository.UserRepository;
+import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.data.repository.UserRoleRepository;
 import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.UserService;
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.user.UserCreationDto;
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.user.UserDto;
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.user.UserRemovalDto;
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.user.UserUpdateDto;
+import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.UserDto;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private final UserRepository userRepository;
+    private final UserRoleRepository userRoleRepository;
+    private final StatusRepository statusRepository;
+
     @Override
-    public Optional<UserDto> findByName(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByName'");
+    public UserDto create(UserDto userDto) {
+        final User user = User.builder().name(userDto.getName()).displayName(userDto.getDisplayName()).email(userDto.getEmail()).status(this.statusRepository.findByStatusEnum(StatusEnum.PENDING_APPROVAL)).build();
+
+        return UserDto.of(this.userRepository.save(user));
     }
 
     @Override
-    public UserCreationDto create(UserCreationDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'create'");
+    public boolean exists(UserDto userDto) {
+        return this.exists(userDto.getId());
     }
 
     @Override
-    public UserUpdateDto update(UserUpdateDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    public boolean exists(UUID id) {
+        return this.findById(id).isPresent();
+    }
+
+    @Override
+    public UserDto update(UserDto userDto) {
+        final User user = this.findPersistedUserByIdOrElseThrow(userDto.getId());
+
+        user.setDisplayName(userDto.getDisplayName());
+
+        return UserDto.of(this.userRepository.save(user));
     }
 
     @Override
     public Stream<UserDto> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        return this.userRoleRepository.findAll().map(userROle -> UserDto.builder().id(userROle.getId()).name(userROle.getName()).displayName(userROle.getDisplayName()).build());
     }
 
-    @Override
-    public Page<UserDto> findAll(Pageable pageable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+    private User findPersistedUserByIdOrElseThrow(UUID id) {
+        return this.userRepository.findById(id).orElseThrow(() -> new IllegalStateException("User not found"));
     }
 
     @Override
     public Optional<UserDto> findById(UUID id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        final Optional<User> user = this.userRepository.findById(id);
+
+        if (user.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(UserDto.of(user.get()));
     }
 
     @Override
-    public Stream<UserDto> findAllById(Stream<UUID> ids) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
+    public Optional<UserDto> findByName(String name) {
+        final Optional<User> user = this.userRepository.findByName(name);
+
+        if (user.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(UserDto.of(user.get()));
     }
 
     @Override
-    public UserDto validateExistenceAndFind(UserDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'validateExistenceAndFind'");
+    public Optional<UserDto> findByEmail(String email) {
+        final Optional<User> user = this.userRepository.findByEmail(email);
+
+        if (user.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(UserDto.of(user.get()));
     }
 
     @Override
-    public Stream<UserDto> validateExistenceAndFind(Stream<UserDto> stream) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'validateExistenceAndFind'");
+    public UserDto approve(UserDto userDto) {
+        final User user = this.findPersistedUserByIdOrElseThrow(userDto.getId());
+
+        user.setStatus(this.statusRepository.findByStatusEnum(StatusEnum.ACTIVE));
+
+        return UserDto.of(this.userRepository.save(user));
     }
 
     @Override
-    public UserUpdateDto approve(UserUpdateDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'approve'");
+    public void delete(UserDto userDto) {
+        final User user = this.findPersistedUserByIdOrElseThrow(userDto.getId());
+
+        user.setStatus(this.statusRepository.findByStatusEnum(StatusEnum.DELETED));
+
+        this.userRepository.save(user);
     }
 
     @Override
-    public void delete(UserRemovalDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
-    }
-
-    @Override
-    public void hardDelete(UserRemovalDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'hardDelete'");
-    }
-
-    @Override
-    public Optional<User> findByUsername(String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByUsername'");
-    }
-
-    @Override
-    public Optional<User> findByEmail(String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByEmail'");
+    public void hardDelete(UserDto userDto) {
+        this.findPersistedUserByIdOrElseThrow(userDto.getId());
+        this.userRoleRepository.deleteById(userDto.getId());
     }
 
 }

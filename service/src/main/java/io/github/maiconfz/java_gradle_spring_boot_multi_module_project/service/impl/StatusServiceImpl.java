@@ -4,95 +4,102 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.data.model.Status;
 import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.data.model.enums.StatusEnum;
+import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.data.repository.StatusRepository;
 import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.StatusService;
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.status.StatusCreationDto;
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.status.StatusDto;
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.status.StatusRemovalDto;
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.status.StatusUpdateDto;
+import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.StatusDto;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 public class StatusServiceImpl implements StatusService {
 
+    private final StatusRepository statusRepository;
+
     @Override
-    public Optional<StatusDto> findByName(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByName'");
+    public StatusDto create(StatusDto statusDto) {
+        final Status status = Status.builder().name(statusDto.getName()).displayName(statusDto.getDisplayName()).status(this.statusRepository.findByStatusEnum(StatusEnum.PENDING_APPROVAL)).build();
+
+        return StatusDto.of(this.statusRepository.save(status));
     }
 
     @Override
-    public StatusCreationDto create(StatusCreationDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'create'");
+    public boolean exists(StatusDto statusDto) {
+        return this.exists(statusDto.getId());
     }
 
     @Override
-    public StatusUpdateDto update(StatusUpdateDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    public boolean exists(UUID id) {
+        return this.findById(id).isPresent();
+    }
+
+    @Override
+    public StatusDto update(StatusDto statusDto) {
+        final Status status = this.findPersistedStatusByIdOrElseThrow(statusDto.getId());
+
+        status.setDisplayName(statusDto.getDisplayName());
+
+        return StatusDto.of(this.statusRepository.save(status));
     }
 
     @Override
     public Stream<StatusDto> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        return this.statusRepository.findAll().map(status -> StatusDto.builder().id(status.getId()).name(status.getName()).displayName(status.getDisplayName()).build());
     }
 
-    @Override
-    public Page<StatusDto> findAll(Pageable pageable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+    private Status findPersistedStatusByIdOrElseThrow(UUID id) {
+        return this.statusRepository.findById(id).orElseThrow(() -> new IllegalStateException("Status not found"));
     }
 
     @Override
     public Optional<StatusDto> findById(UUID id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        final Optional<Status> status = this.statusRepository.findById(id);
+
+        if (status.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(StatusDto.of(status.get()));
     }
 
     @Override
-    public Stream<StatusDto> findAllById(Stream<UUID> ids) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
+    public StatusDto findByStatusEnum(StatusEnum statusEnum) {
+        return StatusDto.of(this.statusRepository.findByStatusEnum(statusEnum));
     }
 
     @Override
-    public StatusDto validateExistenceAndFind(StatusDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'validateExistenceAndFind'");
+    public Optional<StatusDto> findByName(String name) {
+        final Optional<Status> status = this.statusRepository.findByName(name);
+
+        if (status.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(StatusDto.of(status.get()));
     }
 
     @Override
-    public Stream<StatusDto> validateExistenceAndFind(Stream<StatusDto> stream) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'validateExistenceAndFind'");
+    public StatusDto approve(StatusDto statusDto) {
+        final Status status = this.findPersistedStatusByIdOrElseThrow(statusDto.getId());
+
+        status.setStatus(this.statusRepository.findByStatusEnum(StatusEnum.ACTIVE));
+
+        return StatusDto.of(this.statusRepository.save(status));
     }
 
     @Override
-    public StatusUpdateDto approve(StatusUpdateDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'approve'");
+    public void delete(StatusDto statusDto) {
+        final Status status = this.findPersistedStatusByIdOrElseThrow(statusDto.getId());
+
+        status.setStatus(this.statusRepository.findByStatusEnum(StatusEnum.DELETED));
+
+        this.statusRepository.save(status);
     }
 
     @Override
-    public void delete(StatusRemovalDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
-    }
-
-    @Override
-    public void hardDelete(StatusRemovalDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'hardDelete'");
-    }
-
-    @Override
-    public Status findByStatusEnum(StatusEnum statusEnum) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByStatusEnum'");
+    public void hardDelete(StatusDto statusDto) {
+        this.findPersistedStatusByIdOrElseThrow(statusDto.getId());
+        this.statusRepository.deleteById(statusDto.getId());
     }
 
 }

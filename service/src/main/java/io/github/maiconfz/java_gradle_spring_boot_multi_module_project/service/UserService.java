@@ -2,16 +2,10 @@ package io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service;
 
 import java.util.Optional;
 
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.data.model.User;
 import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.base.NamedDtoService;
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.user.UserCreationDto;
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.user.UserDto;
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.user.UserRemovalDto;
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.user.UserUpdateDto;
+import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.UserDto;
 
-public interface UserService extends NamedDtoService<UserCreationDto, UserDto, UserUpdateDto, UserRemovalDto> {
+public interface UserService extends NamedDtoService<UserDto> {
 
-    Optional<User> findByUsername(String username);
-
-    Optional<User> findByEmail(String email);
+    Optional<UserDto> findByEmail(String email);
 }

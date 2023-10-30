@@ -4,87 +4,105 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
+import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.data.model.UserRole;
+import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.data.model.enums.StatusEnum;
+import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.data.model.enums.UserRoleEnum;
+import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.data.repository.StatusRepository;
+import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.data.repository.UserRoleRepository;
 import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.UserRoleService;
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.user_role.UserRoleCreationDto;
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.user_role.UserRoleDto;
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.user_role.UserRoleRemovalDto;
-import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.user_role.UserRoleUpdateDto;
+import io.github.maiconfz.java_gradle_spring_boot_multi_module_project.service.dto.UserRoleDto;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 public class UserRoleServiceImpl implements UserRoleService {
 
+    private final UserRoleRepository userRoleRepository;
+    private final StatusRepository statusRepository;
+
     @Override
-    public Optional<UserRoleDto> findByName(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByName'");
+    public UserRoleDto create(UserRoleDto userRoleDto) {
+        final UserRole userRole = UserRole.builder().name(userRoleDto.getName()).displayName(userRoleDto.getDisplayName()).status(this.statusRepository.findByStatusEnum(StatusEnum.PENDING_APPROVAL)).build();
+
+        return UserRoleDto.of(this.userRoleRepository.save(userRole));
     }
 
     @Override
-    public UserRoleCreationDto create(UserRoleCreationDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'create'");
+    public boolean exists(UserRoleDto userRoleDto) {
+        return this.exists(userRoleDto.getId());
     }
 
     @Override
-    public UserRoleUpdateDto update(UserRoleUpdateDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    public boolean exists(UUID id) {
+        return this.findById(id).isPresent();
+    }
+
+    @Override
+    public UserRoleDto update(UserRoleDto userRoleDto) {
+        final UserRole userRole = this.findPersistedUserRoleByIdOrElseThrow(userRoleDto.getId());
+
+        userRole.setDisplayName(userRoleDto.getDisplayName());
+
+        return UserRoleDto.of(this.userRoleRepository.save(userRole));
     }
 
     @Override
     public Stream<UserRoleDto> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        return this.userRoleRepository.findAll().map(userROle -> UserRoleDto.builder().id(userROle.getId()).name(userROle.getName()).displayName(userROle.getDisplayName()).build());
     }
 
-    @Override
-    public Page<UserRoleDto> findAll(Pageable pageable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+    private UserRole findPersistedUserRoleByIdOrElseThrow(UUID id) {
+        return this.userRoleRepository.findById(id).orElseThrow(() -> new IllegalStateException("UserRole not found"));
     }
 
     @Override
     public Optional<UserRoleDto> findById(UUID id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        final Optional<UserRole> userRole = this.userRoleRepository.findById(id);
+
+        if (userRole.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(UserRoleDto.of(userRole.get()));
     }
 
     @Override
-    public Stream<UserRoleDto> findAllById(Stream<UUID> ids) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
+    public UserRoleDto findByUserRoleEnum(UserRoleEnum userRoleEnum) {
+        return UserRoleDto.of(this.userRoleRepository.findByUserRoleEnum(userRoleEnum));
     }
 
     @Override
-    public UserRoleDto validateExistenceAndFind(UserRoleDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'validateExistenceAndFind'");
+    public Optional<UserRoleDto> findByName(String name) {
+        final Optional<UserRole> userRole = this.userRoleRepository.findByName(name);
+
+        if (userRole.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(UserRoleDto.of(userRole.get()));
     }
 
     @Override
-    public Stream<UserRoleDto> validateExistenceAndFind(Stream<UserRoleDto> stream) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'validateExistenceAndFind'");
+    public UserRoleDto approve(UserRoleDto userRoleDto) {
+        final UserRole userRole = this.findPersistedUserRoleByIdOrElseThrow(userRoleDto.getId());
+
+        userRole.setStatus(this.statusRepository.findByStatusEnum(StatusEnum.ACTIVE));
+
+        return UserRoleDto.of(this.userRoleRepository.save(userRole));
     }
 
     @Override
-    public UserRoleUpdateDto approve(UserRoleUpdateDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'approve'");
+    public void delete(UserRoleDto userRoleDto) {
+        final UserRole userRole = this.findPersistedUserRoleByIdOrElseThrow(userRoleDto.getId());
+
+        userRole.setStatus(this.statusRepository.findByStatusEnum(StatusEnum.DELETED));
+
+        this.userRoleRepository.save(userRole);
     }
 
     @Override
-    public void delete(UserRoleRemovalDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
-    }
-
-    @Override
-    public void hardDelete(UserRoleRemovalDto o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'hardDelete'");
+    public void hardDelete(UserRoleDto userRoleDto) {
+        this.findPersistedUserRoleByIdOrElseThrow(userRoleDto.getId());
+        this.userRoleRepository.deleteById(userRoleDto.getId());
     }
 
 }
