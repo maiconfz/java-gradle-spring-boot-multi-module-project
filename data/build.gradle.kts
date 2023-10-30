@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":data-model"))
-    implementation(project(":data-repository"))
+    api(project(":data-model")) 
+    api(project(":data-repository"))
 }
