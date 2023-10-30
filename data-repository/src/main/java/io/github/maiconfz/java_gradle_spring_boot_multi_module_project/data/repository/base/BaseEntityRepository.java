@@ -28,4 +28,5 @@ public interface BaseEntityRepository<K, ID> extends Repository<K, ID> {
     @Transactional(readOnly = true)
     Stream<K> findAllByStatus(Status status);
 
+    void deleteById(ID id);
 }

@@ -10,11 +10,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum StatusEnum {
-    CREATED("CREATED"),
-    PENDING_APPROVAL("PENDING_APPROVAL"),
-    ACTIVE("ACTIVE"),
-    INACTIVE("INACTIVE"),
-    DELETED("DELETED");
+    PENDING_APPROVAL("PENDING_APPROVAL"), ACTIVE("ACTIVE"), INACTIVE("INACTIVE"), DELETED("DELETED");
 
     private final String name;
 

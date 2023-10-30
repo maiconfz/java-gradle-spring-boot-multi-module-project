@@ -10,8 +10,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum UserRoleEnum {
-    USER("USER"),
-    SYS_ADMIN("SYS_ADMIN");
+    USER("USER"), SYS_ADMIN("SYS_ADMIN");
 
     private final String name;
 
