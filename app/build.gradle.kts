@@ -6,6 +6,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-hateoas")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.data:spring-data-rest-hal-explorer")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    implementation("com.h2database:h2:2.2.224")
     implementation(project(":data"))
+
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 }
